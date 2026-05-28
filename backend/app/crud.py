@@ -7,8 +7,8 @@ def create_reading(db: Session, reading: PostureReadingCreate):
     db_reading = PostureReading(
         device_id=reading.device_id,
         user_id=reading.user_id,
-        posture=reading.posture,
-        sensors=reading.sensors,
+        posture=reading.posture.value,
+        sensors=reading.sensors.model_dump(),
         is_bad_posture=reading.is_bad_posture,
         confidence=reading.confidence
     )
