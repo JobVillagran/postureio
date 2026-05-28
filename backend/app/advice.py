@@ -7,7 +7,8 @@ def generate_advice(readings):
     if total == 0:
         return {
             "advice": "There is not enough data yet.",
-            "risk_level": "unknown"
+            "risk_level": "unknown",
+            "recommended_action": "collect_more_data"
         }
 
     bad_count = sum(1 for item in readings if item.is_bad_posture)
@@ -18,17 +19,21 @@ def generate_advice(readings):
 
     if bad_percentage >= 70:
         risk_level = "high"
-        advice = f"Your posture needs attention. The most frequent issue is {most_common_posture}. Adjust your chair and take a short break."
+        recommended_action = "trigger_alert"
+        advice = f"High posture risk detected. The most frequent issue is {most_common_posture}. Adjust the chair position and take a short break."
     elif bad_percentage >= 40:
         risk_level = "medium"
-        advice = f"Your posture can improve. You often sit in {most_common_posture}. Try to sit centered and keep your back supported."
+        recommended_action = "show_warning"
+        advice = f"Moderate posture risk detected. The most frequent posture is {most_common_posture}. Try to sit centered and support your back."
     else:
         risk_level = "low"
-        advice = "Your posture looks stable. Keep maintaining a balanced sitting position."
+        recommended_action = "no_action"
+        advice = "Posture behavior looks stable. Keep a balanced sitting position."
 
     return {
         "bad_posture_percentage": round(bad_percentage, 2),
         "most_common_posture": most_common_posture,
         "risk_level": risk_level,
+        "recommended_action": recommended_action,
         "advice": advice
     }
