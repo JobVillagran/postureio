@@ -3,12 +3,12 @@ from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 from typing import List
 
+
 from app.database import Base, engine, get_db
 from app.schemas import PostureReadingCreate, PostureReadingResponse
 from app import crud
 from app.reports import generate_summary
-from app.advice import generate_advice
-
+from app.ai_advice import generate_ai_advice
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
@@ -108,7 +108,7 @@ def get_advice(
     authorized: bool = Depends(verify_api_key)
 ):
     readings = crud.get_all_readings(db, limit=100)
-    return generate_advice(readings)
+    return generate_ai_advice(readings)
 
 @app.get("/api/alerts/latest")
 def get_latest_alert(
@@ -116,10 +116,18 @@ def get_latest_alert(
     authorized: bool = Depends(verify_api_key)
 ):
     readings = crud.get_all_readings(db, limit=100)
-    advice = generate_advice(readings)
+    advice = generate_ai_advice(readings)
 
     return {
         "risk_level": advice["risk_level"],
         "recommended_action": advice["recommended_action"],
         "message": advice["advice"]
     }
+
+@app.get("/api/advice/ai")
+def get_ai_advice(
+    db: Session = Depends(get_db),
+    authorized: bool = Depends(verify_api_key)
+):
+    readings = crud.get_all_readings(db, limit=100)
+    return generate_ai_advice(readings)
