@@ -25,7 +25,8 @@ app.add_middleware(
         "http://127.0.0.1:5500",
         "http://localhost:5173",
         "http://127.0.0.1:5173",
-        "https://postureio-dashboard.onrender.com"
+        "https://postureio-dashboard.onrender.com",
+        "https://jobvillagran.github.io"
     ],
     allow_credentials=False,
     allow_methods=["GET"],
