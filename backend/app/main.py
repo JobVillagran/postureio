@@ -124,29 +124,32 @@ def get_summary(
 
 @app.get("/api/advice")
 def get_advice(
+    lang: str = "en",
     db: Session = Depends(get_db),
     authorized: bool = Depends(verify_dashboard_api_key)
 ):
     readings = crud.get_all_readings(db, limit=100)
-    return generate_ai_advice(readings)
+    return generate_ai_advice(readings, lang)
 
 
 @app.get("/api/advice/ai")
 def get_ai_advice(
+    lang: str = "en",
     db: Session = Depends(get_db),
     authorized: bool = Depends(verify_dashboard_api_key)
 ):
     readings = crud.get_all_readings(db, limit=100)
-    return generate_ai_advice(readings)
+    return generate_ai_advice(readings, lang)
 
 
 @app.get("/api/alerts/latest")
 def get_latest_alert(
+    lang: str = "en",
     db: Session = Depends(get_db),
     authorized: bool = Depends(verify_dashboard_api_key)
 ):
     readings = crud.get_all_readings(db, limit=100)
-    advice = generate_ai_advice(readings)
+    advice = generate_ai_advice(readings, lang)
 
     risk_level = advice.get("risk_level", "unknown")
 
