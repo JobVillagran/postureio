@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PostureIO Dashboard</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="app">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">IoT Posture Monitoring</p>
+        <h1>PostureIO</h1>
+        <p class="subtitle">
+          Real-time posture insights from Arduino/ESP32 sensor readings.
+        </p>
+      </div>
+
+      <div class="key-card">
+        <label for="apiKey">Dashboard API Key</label>
+        <div class="key-row">
+          <input id="apiKey" type="password" placeholder="Enter dashboard API key" />
+          <button id="saveKeyBtn">Save</button>
+        </div>
+        <small id="keyStatus">Key is stored only in this browser session.</small>
+      </div>
+    </section>
+
+    <section class="status-grid">
+      <article class="card">
+        <span class="card-label">Backend</span>
+        <h2 id="backendStatus">Checking...</h2>
+        <p id="backendMessage">Waiting for API response.</p>
+      </article>
+
+      <article class="card">
+        <span class="card-label">Current Posture</span>
+        <h2 id="currentPosture">--</h2>
+        <p id="currentPostureMeta">No reading loaded yet.</p>
+      </article>
+
+      <article class="card">
+        <span class="card-label">Risk Level</span>
+        <h2 id="riskLevel">--</h2>
+        <p id="riskMessage">AI advice not loaded yet.</p>
+      </article>
+    </section>
+
+    <section class="dashboard-grid">
+      <article class="panel advice-panel">
+        <div class="panel-header">
+          <div>
+            <span class="card-label">AI Recommendation</span>
+            <h2>Posture Advice</h2>
+          </div>
+          <span id="aiSource" class="badge">Waiting</span>
+        </div>
+        <p id="aiAdvice" class="advice-text">Add your dashboard API key and refresh data.</p>
+      </article>
+
+      <article class="panel">
+        <div class="panel-header">
+          <div>
+            <span class="card-label">Summary</span>
+            <h2>Posture Report</h2>
+          </div>
+        </div>
+
+        <div class="metrics">
+          <div>
+            <strong id="totalReadings">--</strong>
+            <span>Total readings</span>
+          </div>
+          <div>
+            <strong id="badPosture">--</strong>
+            <span>Bad posture</span>
+          </div>
+          <div>
+            <strong id="goodPosture">--</strong>
+            <span>Good posture</span>
+          </div>
+          <div>
+            <strong id="mostCommon">--</strong>
+            <span>Most common</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <span class="card-label">Sensor Feed</span>
+          <h2>Latest Readings</h2>
+        </div>
+        <button id="refreshBtn">Refresh</button>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Device</th>
+              <th>User</th>
+              <th>Posture</th>
+              <th>Bad</th>
+              <th>Confidence</th>
+              <th>Created At</th>
+            </tr>
+          </thead>
+          <tbody id="historyTable">
+            <tr>
+              <td colspan="7">No data loaded yet.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="./app.js"></script>
+</body>
+</html>
