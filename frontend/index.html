@@ -5,42 +5,58 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PostureIO Dashboard</title>
   <link rel="stylesheet" href="./styles.css" />
+  <link rel="icon" type="image/png" href="./assets/favicon.png" />
 </head>
 <body>
   <main class="app">
     <section class="hero">
       <div>
         <p class="eyebrow">IoT Posture Monitoring</p>
-        <h1>PostureIO</h1>
+
+        <img
+          src="./assets/postureio-logo.png"
+          alt="PostureIO"
+          class="brand-logo"
+        />
+
         <p class="subtitle">
           Real-time posture insights from Arduino/ESP32 sensor readings.
         </p>
       </div>
 
-      <div class="key-card">
-        <label for="apiKey">Dashboard API Key</label>
-        <div class="key-row">
-          <input id="apiKey" type="password" placeholder="Enter dashboard API key" />
-          <button id="saveKeyBtn">Save</button>
+      <details id="apiKeyPanel" class="key-card" open>
+        <summary>
+          <span>Dashboard API Key</span>
+          <strong id="keyPanelStatus">Not connected</strong>
+        </summary>
+
+        <div class="key-body">
+          <div class="key-row">
+            <input id="apiKey" type="password" placeholder="Enter dashboard API key" />
+            <button id="saveKeyBtn">Save</button>
+          </div>
+          <small id="keyStatus">Key is stored only in this browser session.</small>
         </div>
-        <small id="keyStatus">Key is stored only in this browser session.</small>
-      </div>
+      </details>
     </section>
 
     <section class="status-grid">
-      <article class="card">
+      <article id="backendCard" class="card status-card status-neutral">
+        <span class="status-dot"></span>
         <span class="card-label">Backend</span>
         <h2 id="backendStatus">Checking...</h2>
         <p id="backendMessage">Waiting for API response.</p>
       </article>
 
-      <article class="card">
+      <article id="currentPostureCard" class="card status-card status-neutral">
+        <span class="status-dot"></span>
         <span class="card-label">Current Posture</span>
         <h2 id="currentPosture">--</h2>
         <p id="currentPostureMeta">No reading loaded yet.</p>
       </article>
 
-      <article class="card">
+      <article id="riskCard" class="card status-card status-neutral">
+        <span class="status-dot"></span>
         <span class="card-label">Risk Level</span>
         <h2 id="riskLevel">--</h2>
         <p id="riskMessage">AI advice not loaded yet.</p>
@@ -54,7 +70,7 @@
             <span class="card-label">AI Recommendation</span>
             <h2>Posture Advice</h2>
           </div>
-          <span id="aiSource" class="badge">Waiting</span>
+          <span id="aiSource" class="badge ai-badge">Waiting</span>
         </div>
         <p id="aiAdvice" class="advice-text">Add your dashboard API key and refresh data.</p>
       </article>
@@ -91,23 +107,29 @@
     <section class="panel">
       <div class="panel-header">
         <div>
-          <span class="card-label">Sensor Feed</span>
-          <h2>Latest Readings</h2>
+        <span class="card-label">Sensor Feed</span>
+        <h2>Latest Readings</h2>
+        <p id="historyHelper" class="section-helper">
+            Showing the latest 10 readings. Use “Load all” to view the full history.
+        </p>
         </div>
-        <button id="refreshBtn">Refresh</button>
+        <div class="table-actions">
+            <button id="refreshBtn">Refresh</button>
+            <button id="loadAllBtn" class="secondary-btn">Load all</button>
+        </div>
       </div>
 
       <div class="table-wrapper">
         <table>
           <thead>
             <tr>
-              <th>ID</th>
+              <th>No.</th>
               <th>Device</th>
               <th>User</th>
               <th>Posture</th>
               <th>Bad</th>
               <th>Confidence</th>
-              <th>Created At</th>
+              <th>Guatemala timezone</th>
             </tr>
           </thead>
           <tbody id="historyTable">
