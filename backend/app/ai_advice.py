@@ -8,6 +8,10 @@ load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 
+def normalize_language(lang: str = "en"):
+    return "es" if lang == "es" else "en"
+
+
 def build_posture_summary(readings):
     total = len(readings)
 
@@ -31,52 +35,124 @@ def build_posture_summary(readings):
     }
 
 
-def generate_local_ai_advice(summary):
+def get_risk_level(summary):
     if summary["total_readings"] == 0:
+        return "unknown"
+
+    bad_percentage = summary["bad_posture_percentage"]
+
+    if bad_percentage >= 70:
+        return "high"
+
+    if bad_percentage >= 40:
+        return "medium"
+
+    return "low"
+
+
+def format_posture_for_language(posture, lang):
+    posture_names = {
+        "en": {
+            "correct": "correct",
+            "leaning_left": "leaning left",
+            "leaning_right": "leaning right",
+            "leaning_forward": "leaning forward",
+            "leaning_back": "leaning back",
+            "slouched": "slouched",
+            "not_sitting": "not sitting"
+        },
+        "es": {
+            "correct": "correcta",
+            "leaning_left": "inclinado a la izquierda",
+            "leaning_right": "inclinado a la derecha",
+            "leaning_forward": "inclinado hacia adelante",
+            "leaning_back": "inclinado hacia atrás",
+            "slouched": "encorvado",
+            "not_sitting": "sin persona sentada"
+        }
+    }
+
+    return posture_names[lang].get(posture, posture)
+
+
+def generate_local_ai_advice(summary, lang: str = "en"):
+    lang = normalize_language(lang)
+    risk_level = get_risk_level(summary)
+
+    if summary["total_readings"] == 0:
+        advice = (
+            "There is not enough posture data yet to generate a recommendation."
+            if lang == "en"
+            else "Aún no hay suficientes lecturas de postura para generar una recomendación."
+        )
+
         return {
             "source": "local_ai_rules",
+            "language": lang,
             "risk_level": "unknown",
             "summary": summary,
-            "advice": "There is not enough posture data yet to generate a recommendation."
+            "advice": advice
         }
 
     bad_percentage = summary["bad_posture_percentage"]
-    posture = summary["most_common_posture"]
+    posture = format_posture_for_language(summary["most_common_posture"], lang)
 
-    if bad_percentage >= 70:
-        risk_level = "high"
-        advice = (
-            f"High posture risk detected. The most frequent issue is {posture}. "
-            "Adjust your chair, sit centered, support your back, and take a short break."
-        )
-    elif bad_percentage >= 40:
-        risk_level = "medium"
-        advice = (
-            f"Moderate posture risk detected. You often sit in {posture}. "
-            "Try to balance your weight, keep both feet on the floor, and correct your back position."
-        )
+    if lang == "es":
+        if bad_percentage >= 70:
+            advice = (
+                f"Riesgo postural alto detectado. La postura más frecuente es {posture}. "
+                "Ajustá tu silla, sentate centrado, apoyá la espalda y tomá una pausa corta."
+            )
+        elif bad_percentage >= 40:
+            advice = (
+                f"Riesgo postural moderado detectado. Frecuentemente estás en postura {posture}. "
+                "Intentá balancear tu peso, mantener ambos pies en el suelo y corregir tu espalda."
+            )
+        else:
+            advice = (
+                "El comportamiento postural se ve estable. Mantené una posición balanceada "
+                "y seguí tomando pausas regulares."
+            )
     else:
-        risk_level = "low"
-        advice = (
-            "Posture behavior looks stable. Keep a balanced sitting position and continue taking regular breaks."
-        )
+        if bad_percentage >= 70:
+            advice = (
+                f"High posture risk detected. The most frequent issue is {posture}. "
+                "Adjust your chair, sit centered, support your back, and take a short break."
+            )
+        elif bad_percentage >= 40:
+            advice = (
+                f"Moderate posture risk detected. You often sit in {posture}. "
+                "Try to balance your weight, keep both feet on the floor, and correct your back position."
+            )
+        else:
+            advice = (
+                "Posture behavior looks stable. Keep a balanced sitting position and continue taking regular breaks."
+            )
 
     return {
         "source": "local_ai_rules",
+        "language": lang,
         "risk_level": risk_level,
         "summary": summary,
         "advice": advice
     }
 
 
-def generate_ai_advice(readings):
+def generate_ai_advice(readings, lang: str = "en"):
+    lang = normalize_language(lang)
     summary = build_posture_summary(readings)
 
     if not GEMINI_API_KEY:
-        return generate_local_ai_advice(summary)
+        return generate_local_ai_advice(summary, lang)
 
     try:
         client = genai.Client(api_key=GEMINI_API_KEY)
+
+        language_instruction = (
+            "Write the final recommendation only in Spanish."
+            if lang == "es"
+            else "Write the final recommendation only in English."
+        )
 
         prompt = f"""
 You are an ergonomic posture assistant for a university IoT project.
@@ -84,11 +160,13 @@ You are an ergonomic posture assistant for a university IoT project.
 Analyze this posture summary and generate one short, practical recommendation.
 
 Rules:
+- {language_instruction}
 - Do not diagnose medical conditions.
 - Do not mention that you are an AI.
 - Use simple language.
 - Keep the answer under 45 words.
-- Focus on posture correction, breaks, and chair adjustment.
+- Focus on posture correction, short breaks, chair position, and sitting balance.
+- Do not repeat raw JSON field names unless needed.
 
 Data:
 {summary}
@@ -99,24 +177,16 @@ Data:
             contents=prompt
         )
 
-        risk_level = "low"
-
-        if summary["total_readings"] == 0:
-            risk_level = "unknown"
-        elif summary["bad_posture_percentage"] >= 70:
-            risk_level = "high"
-        elif summary["bad_posture_percentage"] >= 40:
-            risk_level = "medium"
-
         return {
             "source": "gemini",
-            "risk_level": risk_level,
+            "language": lang,
+            "risk_level": get_risk_level(summary),
             "summary": summary,
             "advice": response.text
         }
 
     except Exception as error:
-        fallback = generate_local_ai_advice(summary)
+        fallback = generate_local_ai_advice(summary, lang)
         fallback["source"] = "local_ai_fallback"
         fallback["provider_error"] = str(error)
 

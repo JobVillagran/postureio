@@ -11,7 +11,7 @@
   <main class="app">
     <section class="hero">
       <div>
-        <p class="eyebrow">IoT Posture Monitoring</p>
+        <p class="eyebrow" data-i18n="eyebrow">IoT Posture Monitoring</p>
 
         <img
           src="./assets/postureio-logo.png"
@@ -19,45 +19,57 @@
           class="brand-logo"
         />
 
-        <p class="subtitle">
+        <p class="subtitle" data-i18n="subtitle">
           Real-time posture insights from Arduino/ESP32 sensor readings.
         </p>
       </div>
 
-      <details id="apiKeyPanel" class="key-card" open>
-        <summary>
-          <span>Dashboard API Key</span>
-          <strong id="keyPanelStatus">Not connected</strong>
-        </summary>
-
-        <div class="key-body">
-          <div class="key-row">
-            <input id="apiKey" type="password" placeholder="Enter dashboard API key" />
-            <button id="saveKeyBtn">Save</button>
-          </div>
-          <small id="keyStatus">Key is stored only in this browser session.</small>
+      <div class="hero-controls">
+        <div class="language-toggle" aria-label="Language selector">
+          <button id="langEnBtn" class="lang-btn active" type="button">EN</button>
+          <button id="langEsBtn" class="lang-btn" type="button">ES</button>
         </div>
-      </details>
+
+        <details id="apiKeyPanel" class="key-card" open>
+          <summary>
+            <span data-i18n="dashboardApiKey">Dashboard API Key</span>
+            <strong id="keyPanelStatus">Not connected</strong>
+          </summary>
+
+          <div class="key-body">
+            <div class="key-row">
+              <input
+                id="apiKey"
+                type="password"
+                placeholder="Enter dashboard API key"
+                data-i18n-placeholder="apiKeyPlaceholder"
+              />
+              <button id="saveKeyBtn" data-i18n="save">Save</button>
+            </div>
+            <small id="keyStatus">Key is stored only in this browser session.</small>
+          </div>
+        </details>
+      </div>
     </section>
 
     <section class="status-grid">
       <article id="backendCard" class="card status-card status-neutral">
         <span class="status-dot"></span>
-        <span class="card-label">Backend</span>
+        <span class="card-label" data-i18n="backend">Backend</span>
         <h2 id="backendStatus">Checking...</h2>
         <p id="backendMessage">Waiting for API response.</p>
       </article>
 
       <article id="currentPostureCard" class="card status-card status-neutral">
         <span class="status-dot"></span>
-        <span class="card-label">Current Posture</span>
+        <span class="card-label" data-i18n="currentPosture">Current Posture</span>
         <h2 id="currentPosture">--</h2>
         <p id="currentPostureMeta">No reading loaded yet.</p>
       </article>
 
       <article id="riskCard" class="card status-card status-neutral">
         <span class="status-dot"></span>
-        <span class="card-label">Risk Level</span>
+        <span class="card-label" data-i18n="riskLevel">Risk Level</span>
         <h2 id="riskLevel">--</h2>
         <p id="riskMessage">AI advice not loaded yet.</p>
       </article>
@@ -67,8 +79,8 @@
       <article class="panel advice-panel">
         <div class="panel-header">
           <div>
-            <span class="card-label">AI Recommendation</span>
-            <h2>Posture Advice</h2>
+            <span class="card-label" data-i18n="aiRecommendation">AI Recommendation</span>
+            <h2 data-i18n="postureAdvice">Posture Advice</h2>
           </div>
           <span id="aiSource" class="badge ai-badge">Waiting</span>
         </div>
@@ -78,27 +90,27 @@
       <article class="panel">
         <div class="panel-header">
           <div>
-            <span class="card-label">Summary</span>
-            <h2>Posture Report</h2>
+            <span class="card-label" data-i18n="summary">Summary</span>
+            <h2 data-i18n="postureReport">Posture Report</h2>
           </div>
         </div>
 
         <div class="metrics">
           <div>
             <strong id="totalReadings">--</strong>
-            <span>Total readings</span>
+            <span data-i18n="totalReadings">Total readings</span>
           </div>
           <div>
             <strong id="badPosture">--</strong>
-            <span>Bad posture</span>
+            <span data-i18n="badPosture">Bad posture</span>
           </div>
           <div>
             <strong id="goodPosture">--</strong>
-            <span>Good posture</span>
+            <span data-i18n="goodPosture">Good posture</span>
           </div>
           <div>
             <strong id="mostCommon">--</strong>
-            <span>Most common</span>
+            <span data-i18n="mostCommon">Most common</span>
           </div>
         </div>
       </article>
@@ -107,15 +119,16 @@
     <section class="panel">
       <div class="panel-header">
         <div>
-        <span class="card-label">Sensor Feed</span>
-        <h2>Latest Readings</h2>
-        <p id="historyHelper" class="section-helper">
+          <span class="card-label" data-i18n="sensorFeed">Sensor Feed</span>
+          <h2 data-i18n="latestReadings">Latest Readings</h2>
+          <p id="historyHelper" class="section-helper">
             Showing the latest 10 readings. Use “Load all” to view the full history.
-        </p>
+          </p>
         </div>
+
         <div class="table-actions">
-            <button id="refreshBtn">Refresh</button>
-            <button id="loadAllBtn" class="secondary-btn">Load all</button>
+          <button id="refreshBtn" data-i18n="refresh">Refresh</button>
+          <button id="loadAllBtn" class="secondary-btn">Load all</button>
         </div>
       </div>
 
@@ -123,13 +136,13 @@
         <table>
           <thead>
             <tr>
-              <th>No.</th>
-              <th>Device</th>
-              <th>User</th>
-              <th>Posture</th>
-              <th>Bad</th>
-              <th>Confidence</th>
-              <th>Guatemala timezone</th>
+              <th data-i18n="tableNo">No.</th>
+              <th data-i18n="tableDevice">Device</th>
+              <th data-i18n="tableUser">User</th>
+              <th data-i18n="tablePosture">Posture</th>
+              <th data-i18n="tableBad">Bad</th>
+              <th data-i18n="tableConfidence">Confidence</th>
+              <th data-i18n="tableTime">Guatemala timezone</th>
             </tr>
           </thead>
           <tbody id="historyTable">
